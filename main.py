@@ -24,6 +24,11 @@ class Token(BaseModel):
 
 # User Registration
 class UserRegistration(BaseModel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.phone_number = None
+        self.email = None
+
     username: str
     password: str
 
@@ -68,6 +73,11 @@ def register(user: UserRegistration):
     if user.username in users_db:
         raise HTTPException(status_code=400, detail="Username already exist")
     users_db[user.username] = user.password
+    if user.email in [u.email for u in users_db.values()]:
+        raise HTTPException(status_code=400, detail="Email already exists")
+    if user.phone_number in [u.phone_number for u in users_db.values()]:
+        raise HTTPException(status_code=400, detail="Phone number already exists")
+    users_db[user.username] = user
     return {"message": "User registered successfully"}
 
 
@@ -147,3 +157,5 @@ def login_with_qr_code(qr_code: QRCode):
         raise HTTPException(status_code=400, detail="Invalid QR code")
     username = qr_codes_db[qr_code.code]
     return {"message": f"Login successful for {username}"}
+
+# Authorization API endpoint
