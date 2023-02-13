@@ -158,4 +158,28 @@ def login_with_qr_code(qr_code: QRCode):
     username = qr_codes_db[qr_code.code]
     return {"message": f"Login successful for {username}"}
 
-# Authorization API endpoint
+
+# Email verification API endpoint
+@app.post("/verify/email")
+def verify_email(token: str = Depends(oauth2_scheme)):
+    username = tokens_db.get(token)
+    if not username:
+        raise HTTPException(status_code=400, detail="Invalid token")
+    user = users_db.get(username)
+    if user.is_email_verified:
+        raise HTTPException(status_code=400, detail="Email already verified")
+    user.is_email_verified = True
+    return {"message": "Email verified successfully"}
+
+
+# Phone verification API endpoint
+@app.post("/verify/phone")
+def verify_phone(token: str = Depends(oauth2_scheme)):
+    username = tokens_db.get(token)
+    if not username:
+        raise HTTPException(status_code=400, detail="Invalid token")
+    user = users_db.get(username)
+    if user.is_phone_verified:
+        raise HTTPException(status_code=400, detail="Phone number already verified")
+    user.is_phone_verified = True
+    return {"message": "Phone number verified successfully"}
