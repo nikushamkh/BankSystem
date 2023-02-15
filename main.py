@@ -4,6 +4,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr
 from typing import Dict
 
+
 app = FastAPI()
 
 
@@ -17,6 +18,7 @@ class User(BaseModel):
     is_phone_verified: bool = False
 
 
+# Token Basemodel
 class Token(BaseModel):
     access_token: str
     token_type: str
